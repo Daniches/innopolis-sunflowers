@@ -5,7 +5,7 @@ from aruco import *
 
 yolo_folder = 'yolov3/'
 yolo_weights_seeds = yolo_folder + 'yolov3_custom_one_class_last_seeds.weights'
-yolo_weights_sunflowers = yolo_folder + 'yolov3_custom_one_class_last_sunflowers.weights'
+yolo_weights_sunflowers = yolo_folder + 'yolov3_custom_one_class_last_seeds.weights'
 yolo_cfg     = yolo_folder + 'yolov3_custom_one_class.cfg'
 yolo_classes = yolo_folder + 'classes.txt'
 
@@ -15,8 +15,9 @@ net_sunflowers = cv2.dnn.readNet(yolo_weights_sunflowers, yolo_cfg)
 with open (yolo_classes) as f:
     labels = f.read().strip().split('\n')
 layer_names = net_seeds.getLayerNames()
-out_layer_indexes = [index[0] - 1 for index in net.getUnconnectedOutLayers()]
+out_layer_indexes = [index[0] - 1 for index in net_seeds.getUnconnectedOutLayers()]
 out_layer_names = [layer_names[index] for index in out_layer_indexes]
+
 
 def find_seeds(img):
     height, width, _ = img.shape
@@ -111,15 +112,16 @@ def find_sunflowers(img):
     return objects
 
 def count_seeds(filename):
-	img = cv2.imread(filename)
-	seeds = find_seeds(img)
-	return len(seeds)
+    print(filename)
+    img = cv2.imread(filename)
+    seeds = find_seeds(img)
+    return len(seeds)
 
 def get_sunflower_size(filename, dist):
-	img = cv2.imread(filename)
-	sunflowers = find_sunflowers(img)
-	sunflower_size_px = max(sunflowers[1])
-	marker_size_px = markerDistance(img)
-	return sunflower_size_px/marker_size_px*dist
+    img = cv2.imread(filename)
+    sunflowers = find_sunflowers(img)
+    sunflower_size_px = max(sunflowers[1][2:])
+    marker_size_px = markerDistance(img)
+    return sunflower_size_px/marker_size_px*dist
 
 	
